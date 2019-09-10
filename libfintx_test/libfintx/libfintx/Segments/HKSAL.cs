@@ -40,13 +40,13 @@ namespace libfintx
             if (Convert.ToInt16(Segment.HISALS) >= 7)
                 segments = "HKSAL:" + SEGNUM.SETVal(3) + ":" + Segment.HISALS + "+" + connectionDetails.IBAN + ":" + connectionDetails.BIC + "+N'";
             else
-            {
                 segments = "HKSAL:" + SEGNUM.SETVal(3) + ":" + Segment.HISALS + "+" + connectionDetails.Account + "::280:" + connectionDetails.Blz + "+N'";
-            }
+
+            segments = HKTAN.Init_HKTAN(segments);
 
             SEG.NUM = SEGNUM.SETInt(3);
 
-            string message = FinTSMessage.Create(connectionDetails.HBCIVersion, Segment.HNHBS, Segment.HNHBK, connectionDetails.Blz, connectionDetails.UserId, connectionDetails.Pin, Segment.HISYN, segments, Segment.HIRMS, SEG.NUM);
+            string message = FinTSMessage.Create(connectionDetails.HBCIVersion, Segment.HNHBS, Segment.HNHBK, connectionDetails.BlzPrimary, connectionDetails.UserId, connectionDetails.Pin, Segment.HISYN, segments, Segment.HIRMS, SEG.NUM);
             return FinTSMessage.Send(connectionDetails.Url, message);
         }
     }

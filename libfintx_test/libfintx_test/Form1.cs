@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,9 +18,15 @@ namespace libfintx_test
 {
     public partial class Form1 : Form
     {
+        private List<Bank> _bankList;
+
         public Form1()
         {
             InitializeComponent();
+            _bankList = Bank.GetBankList();
+
+            if (chk_tracing.Checked)
+                Main.Tracing(true);
         }
 
         /// <summary>
@@ -31,17 +38,7 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             HBCIOutput(Main.Synchronization(connectionDetails).Messages);
         }
@@ -50,7 +47,7 @@ namespace libfintx_test
         /// HBCI-Nachricht ausgeben
         /// </summary>
         /// <param name="hbcimsg"></param>
-        private void HBCIOutput(IEnumerable<HBCIBankMessage> hbcimsg)
+        public void HBCIOutput(IEnumerable<HBCIBankMessage> hbcimsg)
         {
             foreach (var msg in hbcimsg)
             {
@@ -68,7 +65,7 @@ namespace libfintx_test
         /// Einfache Nachricht ausgeben
         /// </summary>
         /// <param name="msg"></param>
-        private void SimpleOutput(string msg)
+        public void SimpleOutput(string msg)
         {
             txt_hbci_meldung.Invoke(new MethodInvoker
                 (delegate ()
@@ -110,7 +107,7 @@ namespace libfintx_test
                     }
 
                     var values = lines[1].Split(';');
-                    if (values.Length != 8)
+                    if (values.Length < 8)
                     {
                         SimpleOutput($"Die Datei {connFile} existiert, hat aber das falsche Format.");
                         return;
@@ -119,7 +116,7 @@ namespace libfintx_test
                     txt_kontonummer.Text = values[0];
                     txt_bankleitzahl.Text = values[1];
                     txt_bic.Text = values[2];
-                    txt_iban.Text = values[3].Replace(" ", "");
+                    txt_iban.Text = values[3];
                     txt_url.Text = values[4];
                     txt_hbci_version.Text = values[5];
                     txt_userid.Text = values[6];
@@ -156,7 +153,7 @@ namespace libfintx_test
                     }
 
                     var values = lines[1].Split(';');
-                    if (values.Length != 5)
+                    if (values.Length < 5)
                     {
                         SimpleOutput($"Die Datei {connFile} existiert, hat aber das falsche Format.");
                         return;
@@ -167,6 +164,8 @@ namespace libfintx_test
                     txt_empfängerbic.Text = values[2];
                     txt_betrag.Text = values[3];
                     txt_verwendungszweck.Text = values[4];
+                    if (values.Length >= 6)
+                        txt_tanverfahren.Text = values[5];
                 }
             }
         }
@@ -180,25 +179,29 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
-                var balance = Main.Balance(connectionDetails, false);
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                // TAN-Medium-Name
+                var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
+                if (!requestTanResult.IsSuccess)
+                {
+                    HBCIOutput(requestTanResult.Messages);
+                    return;
+                }
+
+                Segment.HITAB = requestTanResult.Data.FirstOrDefault();
+
+                var balance = Main.Balance(connectionDetails, new TANDialog(WaitForTAN), false);
 
                 HBCIOutput(balance.Messages);
 
@@ -216,25 +219,19 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
-                var accounts = Main.Accounts(connectionDetails, false);
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                var accounts = Main.Accounts(connectionDetails, new TANDialog(WaitForTAN), false);
 
                 HBCIOutput(accounts.Messages);
 
@@ -262,19 +259,10 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
@@ -296,25 +284,19 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
-                var transactions = Main.Transactions(connectionDetails, false);
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                var transactions = Main.Transactions(connectionDetails, new TANDialog(WaitForTAN), false);
 
                 HBCIOutput(transactions.Messages);
 
@@ -343,25 +325,16 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
-                var transactions = Main.Transactions_camt(connectionDetails, false, camtVersion.camt052);
+                var transactions = Main.Transactions_camt(connectionDetails, new TANDialog(WaitForTAN), false, camtVersion.camt052);
 
                 HBCIOutput(transactions.Messages);
 
@@ -390,25 +363,16 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
-                var transactions = Main.Transactions_camt(connectionDetails, false, camtVersion.camt053);
+                var transactions = Main.Transactions_camt(connectionDetails, new TANDialog(WaitForTAN), false, camtVersion.camt053);
 
                 HBCIOutput(transactions.Messages);
 
@@ -436,24 +400,13 @@ namespace libfintx_test
         private void btn_überweisen_Click(object sender, EventArgs e)
         {
             Main.Logging(true);
-            Main.Tracing(true, true);
 
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                AccountHolder = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
@@ -462,18 +415,24 @@ namespace libfintx_test
                 // TAN-Verfahren
                 Segment.HIRMS = txt_tanverfahren.Text;
 
+                var tanDialog = new TANDialog(WaitForTAN, pBox_tan);
+
                 // TAN-Medium-Name
-                var tanmediumname = Main.RequestTANMediumName(connectionDetails);
-                Segment.HITAB = tanmediumname.Data;
+                var requestTanMediumResult = Main.RequestTANMediumName(connectionDetails, tanDialog);
+                HBCIOutput(requestTanMediumResult.Messages);
+                if (!requestTanMediumResult.IsSuccess)
+                    return;
+
+                Segment.HITAB = requestTanMediumResult.Data.FirstOrDefault();
+
+                var transfer = Main.Transfer(connectionDetails, tanDialog, txt_empfängername.Text, txt_empfängeriban.Text, txt_empfängerbic.Text,
+                    decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, false);
 
                 // Out image is needed e. g. for photoTAN
-                var transfer = Main.Transfer(connectionDetails, txt_empfängername.Text, txt_empfängeriban.Text, txt_empfängerbic.Text,
-                    decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, pBox_tan, false);
+                //var transfer = Main.Transfer(connectionDetails, txt_empfängername.Text, txt_empfängeriban.Text, txt_empfängerbic.Text,
+                //    decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, pBox_tan, false);
 
                 HBCIOutput(transfer.Messages);
-
-                if (transfer.IsSuccess)
-                    SimpleOutput(Main.Transaction_Output());
             }
         }
 
@@ -486,31 +445,26 @@ namespace libfintx_test
         {
             Segment.Reset();
 
-            ConnectionDetails connectionDetails = new ConnectionDetails()
-            {
-                Account = txt_kontonummer.Text,
-                Blz = Convert.ToInt32(txt_bankleitzahl.Text),
-                BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
-                Url = txt_url.Text,
-                HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
-                UserId = txt_userid.Text,
-                Pin = txt_pin.Text
-            };
+            ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
 
             if (sync.IsSuccess)
             {
                 Segment.HIRMS = txt_tanverfahren.Text;
+                var result = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
 
-                var tanmediumname = Main.RequestTANMediumName(connectionDetails);
+                HBCIOutput(result.Messages);
 
-                SimpleOutput(tanmediumname.Data);
+                if (result.IsSuccess)
+                    SimpleOutput(string.Join(", ", result.Data));
             }
         }
+
+        private string _tan;
 
         /// <summary>
         /// Auftrag mit TAN bestätigen
@@ -519,21 +473,152 @@ namespace libfintx_test
         /// <param name="e"></param>
         private void btn_auftrag_bestätigen_tan_Click(object sender, EventArgs e)
         {
-            ConnectionDetails connectionDetails = new ConnectionDetails()
+            _tan = txt_tan.Text;
+            // Wird eigentlich nicht mehr benötigt -> UserTANDialog
+
+            //ConnectionDetails connectionDetails = GetConnectionDetails();
+
+            //var tan = Main.TAN(connectionDetails, txt_tan.Text);
+
+            //HBCIOutput(tan.Messages);
+        }
+
+        private void chk_Tracing_CheckedChanged(object sender, EventArgs e)
+        {
+            Main.Tracing(chk_tracing.Checked, false);
+            if (chk_tracing.Checked)
             {
+                MessageBox.Show("Achtung: Die Nachrichten werden im Klartext (inkl. PIN, Benutzerkennung, TAN) in eine Textdatei geschrieben!");
+            }
+            chk_tracingFormatted.Visible = chk_tracing.Checked;
+        }
+
+        private void chk_tracingFormatted_CheckedChanged(object sender, EventArgs e)
+        {
+            Main.Tracing(chk_tracing.Checked, chk_tracingFormatted.Checked);
+        }
+
+        private ConnectionDetails GetConnectionDetails()
+        {
+            return new ConnectionDetails()
+            {
+                AccountHolder = txt_empfängername.Text,
                 Account = txt_kontonummer.Text,
                 Blz = Convert.ToInt32(txt_bankleitzahl.Text),
+                BlzHeadquarter = string.IsNullOrWhiteSpace(txt_bankleitzahl_zentrale.Text) ? (int?)null : Convert.ToInt32(txt_bankleitzahl_zentrale.Text),
                 BIC = txt_bic.Text,
-                IBAN = txt_iban.Text,
+                IBAN = Regex.Replace(txt_iban.Text, @"\s+", ""),
                 Url = txt_url.Text,
                 HBCIVersion = Convert.ToInt32(txt_hbci_version.Text),
                 UserId = txt_userid.Text,
                 Pin = txt_pin.Text
             };
+        }
 
-            var tan = Main.TAN(connectionDetails, txt_tan.Text);
+        private void Txt_bankleitzahl_TextChanged(object sender, EventArgs e)
+        {
+            var bank = _bankList.FirstOrDefault(b => b.Blz == txt_bankleitzahl.Text);
+            if (bank != null)
+            {
+                txt_bankleitzahl_zentrale.Text = bank.BlzZentrale;
+                txt_bic.Text = bank.Bic;
+                txt_url.Text = bank.Url;
+                txt_hbci_version.Text = "300";
+            }
 
-            HBCIOutput(tan.Messages);
+            UpdateIban();
+        }
+
+        private void UpdateIban()
+        {
+            if (!string.IsNullOrEmpty(txt_bankleitzahl.Text) && !string.IsNullOrWhiteSpace(txt_kontonummer.Text))
+            {
+                txt_iban.Text = CreateIban(txt_bankleitzahl.Text, txt_kontonummer.Text);
+            }
+        }
+
+        public static string CreateIban(string blz, string kntnr, bool groupedReturn = true)
+        {
+            string lkz = "DE";
+
+            string bban = blz.PadLeft(8, '0') + kntnr.PadLeft(10, '0');
+
+            string sum = bban + lkz.Aggregate("", (current, c) => current + (c - 55).ToString()) + "00";
+
+            try
+            {
+                var d = decimal.Parse(sum);
+                var checksum = 98 - (d % 97);
+                string iban = lkz + checksum.ToString().PadLeft(2, '0') + bban;
+                return groupedReturn ? FormatIBAN(iban) : iban;
+            }
+            catch (Exception)
+            {
+            }
+            return null;
+        }
+
+        public static string FormatIBAN(string iban)
+        {
+            iban = iban?.ToUpper()?.Trim();
+            if (iban == null)
+                return string.Empty;
+
+            iban = Regex.Replace(iban, @"\s+", "");
+
+            return iban.Select((c, i) => (i % 4 == 3) ? c + " " : c + "").Aggregate("", (current, c) => current + c);
+        }
+
+        private void Txt_kontonummer_TextChanged(object sender, EventArgs e)
+        {
+            UpdateIban();
+        }
+
+        public string WaitForTAN(TANDialog tanDialog)
+        {
+            HBCIOutput(tanDialog.DialogResult.Messages);
+
+            txt_tan.BackColor = Color.LightYellow;
+            txt_tan.Focus();
+
+            while (string.IsNullOrWhiteSpace(_tan))
+            {
+                Application.DoEvents();
+            }
+
+            txt_tan.BackColor = Color.White;
+
+            return txt_tan.Text;
+        }
+
+        static string _accountFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "account.csv");
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            string account = $"{txt_kontonummer.Text};{txt_bankleitzahl.Text};{txt_bankleitzahl_zentrale.Text};{txt_bic.Text};{txt_iban.Text};{txt_url.Text};{txt_hbci_version.Text};{txt_userid.Text}";
+
+            File.WriteAllText(_accountFile, account);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (File.Exists(_accountFile))
+            {
+                var content = File.ReadAllText(_accountFile);
+                var fields = content.Split(';');
+                if (fields.Length == 8)
+                {
+                    txt_kontonummer.Text = fields[0];
+                    txt_bankleitzahl.Text = fields[1];
+                    txt_bankleitzahl_zentrale.Text = fields[2];
+                    txt_bic.Text = fields[3];
+                    txt_iban.Text = fields[4];
+                    txt_url.Text = fields[5];
+                    txt_hbci_version.Text = fields[6];
+                    txt_userid.Text = fields[7];
+                    txt_pin.Focus();
+                }
+            }
         }
     }
 }

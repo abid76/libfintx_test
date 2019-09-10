@@ -53,6 +53,9 @@ namespace libfintx
                 // Version 5
                 else if (HITANS == 5)
                     segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++++" + Segment.HITAN + "++N'";
+                // Version 6
+                else if (HITANS == 6)
+                    segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++++" + Segment.HITAN + "+N'";
                 else // default
                     segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++++" + Segment.HITAN + "++N'";
             }
@@ -70,13 +73,16 @@ namespace libfintx
                 // Version 5
                 else if (HITANS == 5)
                     segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++++" + Segment.HITAN + "++N++++" + Segment.HITAB + "'";
+                // Version 6
+                else if (HITANS == 6)
+                    segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++++" + Segment.HITAN + "+N++++" + Segment.HITAB + "'";
                 else // default
                     segments = "HKTAN:" + SEGNUM.SETVal(3) + ":" + Segment.HITANS.Substring(0, 1) + "+2++" + Segment.HITAN + "++N++++" + Segment.HITAB + "'";
             }
 
             SEG.NUM = SEGNUM.SETInt(3);
 
-            string message = FinTSMessage.Create(connectionDetails.HBCIVersion, Segment.HNHBS, Segment.HNHBK, connectionDetails.Blz, connectionDetails.UserId, connectionDetails.Pin, Segment.HISYN, segments, Segment.HIRMS + ":" + TAN, SEG.NUM);
+            string message = FinTSMessage.Create(connectionDetails.HBCIVersion, Segment.HNHBS, Segment.HNHBK, connectionDetails.BlzPrimary, connectionDetails.UserId, connectionDetails.Pin, Segment.HISYN, segments, Segment.HIRMS + ":" + TAN, SEG.NUM);
             return FinTSMessage.Send(connectionDetails.Url, message);
         }
     }
