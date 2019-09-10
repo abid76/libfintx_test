@@ -21,10 +21,29 @@
  * 	
  */
 
+using System;
+using System.Linq;
+
 namespace libfintx
 {
-    public static class BPD
+    public class BPD
     {
-        public static string Value { get; set; }
+        public string Value { get; set; }
+
+        public HIPINS HIPINS { get; set; }
+
+        public static BPD Parse_BPD(string bpd)
+        {
+            var result = new BPD();
+
+            result.Value = bpd;
+
+            var lines = bpd.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            var hipins = lines.FirstOrDefault(l => l.StartsWith("HIPINS"));
+            result.HIPINS = HIPINS.Parse_HIPINS(hipins);
+
+            return result;
+        }
     }
 }

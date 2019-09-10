@@ -21,11 +21,15 @@
  * 	
  */
 
+using System;
+using System.IO;
+
 namespace libfintx
 {
     public static class Program
     {
         public static string Buildname { get; set; } = "libfintx";
+
         public static string Version { get; set; } = "0.1";
     }
 }

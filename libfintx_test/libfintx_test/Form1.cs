@@ -192,14 +192,17 @@ namespace libfintx_test
                 Segment.HIRMS = txt_tanverfahren.Text;
 
                 // TAN-Medium-Name
-                var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
-                if (!requestTanResult.IsSuccess)
+                AccountInformations accountInfo = connectionDetails.UPD?.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
+                if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
                 {
-                    HBCIOutput(requestTanResult.Messages);
-                    return;
+                    var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
+                    if (!requestTanResult.IsSuccess)
+                    {
+                        HBCIOutput(requestTanResult.Messages);
+                        return;
+                    }
+                    Segment.HITAB = requestTanResult.Data.FirstOrDefault();
                 }
-
-                Segment.HITAB = requestTanResult.Data.FirstOrDefault();
 
                 var balance = Main.Balance(connectionDetails, new TANDialog(WaitForTAN), false);
 
@@ -418,12 +421,17 @@ namespace libfintx_test
                 var tanDialog = new TANDialog(WaitForTAN, pBox_tan);
 
                 // TAN-Medium-Name
-                var requestTanMediumResult = Main.RequestTANMediumName(connectionDetails, tanDialog);
-                HBCIOutput(requestTanMediumResult.Messages);
-                if (!requestTanMediumResult.IsSuccess)
-                    return;
-
-                Segment.HITAB = requestTanMediumResult.Data.FirstOrDefault();
+                AccountInformations accountInfo = connectionDetails.UPD?.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
+                if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
+                {
+                    var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
+                    if (!requestTanResult.IsSuccess)
+                    {
+                        HBCIOutput(requestTanResult.Messages);
+                        return;
+                    }
+                    Segment.HITAB = requestTanResult.Data.FirstOrDefault();
+                }
 
                 var transfer = Main.Transfer(connectionDetails, tanDialog, txt_empfängername.Text, txt_empfängeriban.Text, txt_empfängerbic.Text,
                     decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, false);
@@ -464,7 +472,7 @@ namespace libfintx_test
             }
         }
 
-        private string _tan;
+        private bool _tanReady;
 
         /// <summary>
         /// Auftrag mit TAN bestätigen
@@ -473,7 +481,7 @@ namespace libfintx_test
         /// <param name="e"></param>
         private void btn_auftrag_bestätigen_tan_Click(object sender, EventArgs e)
         {
-            _tan = txt_tan.Text;
+            _tanReady = true;
             // Wird eigentlich nicht mehr benötigt -> UserTANDialog
 
             //ConnectionDetails connectionDetails = GetConnectionDetails();
@@ -500,7 +508,7 @@ namespace libfintx_test
 
         private ConnectionDetails GetConnectionDetails()
         {
-            return new ConnectionDetails()
+            var result = new ConnectionDetails()
             {
                 AccountHolder = txt_empfängername.Text,
                 Account = txt_kontonummer.Text,
@@ -513,6 +521,11 @@ namespace libfintx_test
                 UserId = txt_userid.Text,
                 Pin = txt_pin.Text
             };
+
+            result.BPD = Helper.GetBPD(result.Blz);
+            result.UPD = Helper.GetUPD(result.Blz, result.UserId);
+
+            return result;
         }
 
         private void Txt_bankleitzahl_TextChanged(object sender, EventArgs e)
@@ -581,14 +594,18 @@ namespace libfintx_test
             txt_tan.BackColor = Color.LightYellow;
             txt_tan.Focus();
 
-            while (string.IsNullOrWhiteSpace(_tan))
+            while (!_tanReady)
             {
                 Application.DoEvents();
             }
+            var tan = txt_tan.Text;
 
             txt_tan.BackColor = Color.White;
+            txt_tan.Text = string.Empty;
 
-            return txt_tan.Text;
+            _tanReady = false;
+
+            return tan;
         }
 
         static string _accountFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "account.csv");
@@ -619,6 +636,12 @@ namespace libfintx_test
                     txt_pin.Focus();
                 }
             }
+
+            var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var productIdFile = Path.Combine(homeDir, ".libfintx", "Product_Id.txt");
+
+            if (File.Exists(productIdFile))
+                libfintx.Program.Buildname = File.ReadAllText(productIdFile);
         }
     }
 }

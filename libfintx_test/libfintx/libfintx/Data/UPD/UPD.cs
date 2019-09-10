@@ -23,8 +23,24 @@
 
 namespace libfintx
 {
-    public static class UPD
+    public class UPD
     {
-        public static string Value { get; set; }
+        public string Value { get; set; }
+
+        public HIUPD HIUPD { get; set; }
+
+        public UPD()
+        {
+        }
+
+        public static UPD Parse_UPD(string upd)
+        {
+            var result = new UPD();
+
+            result.Value = upd;
+            result.HIUPD = HIUPD.Parse_HIPUPD(upd);
+
+            return result;
+        }
     }
 }
