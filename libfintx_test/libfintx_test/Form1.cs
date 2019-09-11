@@ -441,7 +441,7 @@ namespace libfintx_test
                     Segment.HITAB = requestTanResult.Data.FirstOrDefault();
                 }
 
-                var transfer = Main.Transfer(connectionDetails, tanDialog, txt_empfängername.Text, txt_empfängeriban.Text, txt_empfängerbic.Text,
+                var transfer = Main.Transfer(connectionDetails, tanDialog, txt_empfängername.Text, Regex.Replace(txt_empfängeriban.Text, @"\s+", ""), txt_empfängerbic.Text,
                     decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, false);
 
                 // Out image is needed e. g. for photoTAN
