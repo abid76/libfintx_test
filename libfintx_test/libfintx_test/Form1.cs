@@ -23,10 +23,6 @@ namespace libfintx_test
         public Form1()
         {
             InitializeComponent();
-            _bankList = Bank.GetBankList();
-
-            if (chk_tracing.Checked)
-                Main.Tracing(true);
         }
 
         /// <summary>
@@ -619,6 +615,11 @@ namespace libfintx_test
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            _bankList = Bank.GetBankList();
+
+            if (chk_tracing.Checked)
+                Main.Tracing(true);
+
             if (File.Exists(_accountFile))
             {
                 var content = File.ReadAllText(_accountFile);
