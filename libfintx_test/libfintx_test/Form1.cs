@@ -36,7 +36,9 @@ namespace libfintx_test
 
             ConnectionDetails connectionDetails = GetConnectionDetails();
 
-            HBCIOutput(Main.Synchronization(connectionDetails).Messages);
+            HBCIDialogResult<string> result = Main.Synchronization(connectionDetails);
+
+            HBCIOutput(result.Messages);
         }
 
         /// <summary>
@@ -178,7 +180,8 @@ namespace libfintx_test
             ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
-            // connectionDetails.CustomerSystemId = Segment.HISYN;
+            connectionDetails.CustomerSystemId = Segment.HISYN;
+
 
             HBCIOutput(sync.Messages);
 
@@ -188,7 +191,7 @@ namespace libfintx_test
                 Segment.HIRMS = txt_tanverfahren.Text;
 
                 // TAN-Medium-Name
-                AccountInformations accountInfo = connectionDetails.UPD?.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
+                AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
                 if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
                 {
                     var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
@@ -405,6 +408,9 @@ namespace libfintx_test
             ConnectionDetails connectionDetails = GetConnectionDetails();
 
             var sync = Main.Synchronization(connectionDetails);
+            Helper.InitBPD(connectionDetails.Blz);
+            Helper.InitUPD(connectionDetails.Blz, connectionDetails.UserId);
+
             // connectionDetails.CustomerSystemId = Segment.HISYN;
 
             HBCIOutput(sync.Messages);
@@ -417,7 +423,7 @@ namespace libfintx_test
                 var tanDialog = new TANDialog(WaitForTAN, pBox_tan);
 
                 // TAN-Medium-Name
-                AccountInformations accountInfo = connectionDetails.UPD?.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
+                AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
                 if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
                 {
                     var requestTanResult = Main.RequestTANMediumName(connectionDetails, new TANDialog(WaitForTAN));
@@ -517,9 +523,6 @@ namespace libfintx_test
                 UserId = txt_userid.Text,
                 Pin = txt_pin.Text
             };
-
-            result.BPD = Helper.GetBPD(result.Blz);
-            result.UPD = Helper.GetUPD(result.Blz, result.UserId);
 
             return result;
         }
