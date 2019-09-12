@@ -456,7 +456,7 @@ namespace libfintx_test
             if (sync.IsSuccess)
             {
                 Segment.HIRMS = txt_tanverfahren.Text;
-                var result = Main.RequestTANMediumName(connectionDetails, _tanDialog);
+                var result = Main.RequestTANMediumName(connectionDetails);
 
                 HBCIOutput(result.Messages);
 
@@ -610,7 +610,7 @@ namespace libfintx_test
             AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(conn.Account, conn.Blz.ToString());
             if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
             {
-                var requestTanResult = Main.RequestTANMediumName(conn, _tanDialog);
+                var requestTanResult = Main.RequestTANMediumName(conn);
                 if (!requestTanResult.IsSuccess)
                 {
                     HBCIOutput(requestTanResult.Messages);
