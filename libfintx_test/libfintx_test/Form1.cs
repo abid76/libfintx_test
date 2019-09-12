@@ -191,25 +191,8 @@ namespace libfintx_test
                 // TAN-Verfahren
                 Segment.HIRMS = txt_tanverfahren.Text;
 
-                // TAN-Medium-Name
-                var accounts = Main.Accounts(connectionDetails, _tanDialog, false);
-                if (!accounts.IsSuccess)
-                {
-                    HBCIOutput(accounts.Messages);
+                if (!InitTANMedium(connectionDetails))
                     return;
-                }
-
-                AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
-                if (accountInfo == null || accountInfo.IsSegmentPermitted("HKTAB"))
-                {
-                    var requestTanResult = Main.RequestTANMediumName(connectionDetails, _tanDialog);
-                    if (!requestTanResult.IsSuccess)
-                    {
-                        HBCIOutput(requestTanResult.Messages);
-                        return;
-                    }
-                    Segment.HITAB = requestTanResult.Data.FirstOrDefault();
-                }
 
                 var balance = Main.Balance(connectionDetails, _tanDialog, false);
 
@@ -306,6 +289,9 @@ namespace libfintx_test
                 // TAN-Verfahren
                 Segment.HIRMS = txt_tanverfahren.Text;
 
+                if (!InitTANMedium(connectionDetails))
+                    return;
+
                 var transactions = Main.Transactions(connectionDetails, _tanDialog, false);
 
                 HBCIOutput(transactions.Messages);
@@ -344,6 +330,12 @@ namespace libfintx_test
 
             if (sync.IsSuccess)
             {
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                if (!InitTANMedium(connectionDetails))
+                    return;
+
                 var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt052);
 
                 HBCIOutput(transactions.Messages);
@@ -382,6 +374,12 @@ namespace libfintx_test
 
             if (sync.IsSuccess)
             {
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                if (!InitTANMedium(connectionDetails))
+                    return;
+
                 var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt053);
 
                 HBCIOutput(transactions.Messages);
@@ -426,22 +424,9 @@ namespace libfintx_test
                 // TAN-Verfahren
                 Segment.HIRMS = txt_tanverfahren.Text;
 
-                var tanDialog = new TANDialog(WaitForTAN, pBox_tan);
+                InitTANMedium(connectionDetails);
 
-                // TAN-Medium-Name
-                AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(connectionDetails.Account, connectionDetails.Blz.ToString());
-                if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
-                {
-                    var requestTanResult = Main.RequestTANMediumName(connectionDetails, _tanDialog);
-                    if (!requestTanResult.IsSuccess)
-                    {
-                        HBCIOutput(requestTanResult.Messages);
-                        return;
-                    }
-                    Segment.HITAB = requestTanResult.Data.FirstOrDefault();
-                }
-
-                var transfer = Main.Transfer(connectionDetails, tanDialog, txt_empfängername.Text, Regex.Replace(txt_empfängeriban.Text, @"\s+", ""), txt_empfängerbic.Text,
+                var transfer = Main.Transfer(connectionDetails, _tanDialog, txt_empfängername.Text, Regex.Replace(txt_empfängeriban.Text, @"\s+", ""), txt_empfängerbic.Text,
                     decimal.Parse(txt_betrag.Text), txt_verwendungszweck.Text, Segment.HIRMS, false);
 
                 // Out image is needed e. g. for photoTAN
@@ -611,6 +596,30 @@ namespace libfintx_test
             _tanReady = false;
 
             return tan;
+        }
+
+        private bool InitTANMedium(ConnectionDetails conn)
+        {
+            // TAN-Medium-Name
+            var accounts = Main.Accounts(conn, _tanDialog, false);
+            if (!accounts.IsSuccess)
+            {
+                HBCIOutput(accounts.Messages);
+                return false;
+            }
+            AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(conn.Account, conn.Blz.ToString());
+            if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
+            {
+                var requestTanResult = Main.RequestTANMediumName(conn, _tanDialog);
+                if (!requestTanResult.IsSuccess)
+                {
+                    HBCIOutput(requestTanResult.Messages);
+                    return false;
+                }
+                Segment.HITAB = requestTanResult.Data.FirstOrDefault();
+            }
+
+            return true;
         }
 
         static string _accountFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "account.csv");
