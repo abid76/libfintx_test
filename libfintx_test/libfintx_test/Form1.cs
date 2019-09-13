@@ -658,11 +658,11 @@ namespace libfintx_test
                 }
             }
 
-            var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var productIdFile = Path.Combine(homeDir, ".libfintx", "Product_Id.txt");
+            var dir = Helper.GetProgramBaseDir();
+            var productIdFile = Path.Combine(dir, "Product_Id.txt");
 
             if (File.Exists(productIdFile))
-                libfintx.Program.Buildname = File.ReadAllText(productIdFile);
+                libfintx.Program.ProductId = File.ReadAllText(productIdFile);
         }
     }
 }
