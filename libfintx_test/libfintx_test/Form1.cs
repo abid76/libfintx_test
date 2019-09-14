@@ -22,6 +22,8 @@ namespace libfintx_test
 
         private TANDialog _tanDialog;
 
+        private bool _closing;
+
         public Form1()
         {
             InitializeComponent();
@@ -584,7 +586,7 @@ namespace libfintx_test
             txt_tan.BackColor = Color.LightYellow;
             txt_tan.Focus();
 
-            while (!_tanReady)
+            while (!_tanReady && !_closing)
             {
                 Application.DoEvents();
             }
@@ -626,6 +628,8 @@ namespace libfintx_test
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            _closing = true;
+
             string account = $"{txt_kontonummer.Text};{txt_bankleitzahl.Text};{txt_bankleitzahl_zentrale.Text};{txt_bic.Text};{txt_iban.Text};{txt_url.Text};{txt_hbci_version.Text};{txt_userid.Text};{txt_tanverfahren.Text}";
 
             File.WriteAllText(_accountFile, account);
