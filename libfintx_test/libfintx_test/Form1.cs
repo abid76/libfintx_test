@@ -612,13 +612,7 @@ namespace libfintx_test
             AccountInformations accountInfo = UPD.HIUPD?.GetAccountInformations(conn.Account, conn.Blz.ToString());
             if (accountInfo != null && accountInfo.IsSegmentPermitted("HKTAB"))
             {
-                var requestTanResult = Main.RequestTANMediumName(conn);
-                if (!requestTanResult.IsSuccess)
-                {
-                    HBCIOutput(requestTanResult.Messages);
-                    return false;
-                }
-                Segment.HITAB = requestTanResult.Data.FirstOrDefault();
+                Segment.HITAB = txt_tan_medium.Text;
             }
 
             return true;
