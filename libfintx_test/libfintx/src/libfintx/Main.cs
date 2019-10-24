@@ -24,12 +24,13 @@
 using libfintx.Data;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static libfintx.HKCDE;
 
 namespace libfintx

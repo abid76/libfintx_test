@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System;
 
 #if WINDOWS
 using System.Windows.Forms;
@@ -29,9 +27,9 @@ namespace libfintx
 
         public HBCIDialogResult DialogResult { get; internal set; }
 
-        public Image FlickerImage { get; internal set; }
+        public Image<Rgba32> FlickerImage { get; internal set; }
 
-        public Image MatrixImage { get; internal set; }
+        public Image<Rgba32> MatrixImage { get; internal set; }
 
         private Func<TANDialog, string> _waitForTan;
 

@@ -27,6 +27,8 @@ using libfintx.Data;
 using System;
 using System.Linq;
 using System.IO;
+using Xunit;
+using Xunit.Abstractions;
 
 using HBCI = libfintx.Main;
 
@@ -36,64 +38,27 @@ using hbci = libfintx;
 using System.Windows.Forms;
 #endif
 
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+
 namespace libfintx
 {
     public class Test
     {
+        bool Anonymous;
 
-#if DEBUG
-        static bool Anonymous;
+        private readonly ITestOutputHelper output;
 
-        static ConnectionDetails _conn = null;
-
-        static Test()
+        public Test(ITestOutputHelper output)
         {
-            // Damit keine Zugangsdaten direkt im Code hinterlegt sind, kann optional eine Datei verwendet werden.
-            // Datei liegt in C:/Users/<username>/libfintx_test_connection.csv
-
-            var userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var connFile = Path.Combine(userDir, "libfintx_test_connnection.csv");
-            if (File.Exists(connFile))
-            {
-                var lines = File.ReadAllLines(connFile).Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
-                if (lines.Length != 2)
-                {
-                    Console.WriteLine($"File {connFile} exists but has wrong format.");
-                    return;
-                }
-
-                var values = lines[1].Split(';');
-                if (values.Length != 8)
-                {
-                    Console.WriteLine($"File {connFile} exists but has wrong format.");
-                    return;
-                }
-                var account = values[0];
-                var blz = Convert.ToInt32(values[1]);
-                var bic = values[2];
-                var iban = values[3].Replace(" ", "");
-                var url = values[4];
-                var hbciVersion = Convert.ToInt32(values[5]);
-                var userId = values[6];
-                var pin = values[7];
-
-                _conn = new ConnectionDetails()
-                {
-                    Account = account,
-                    Blz = blz,
-                    BIC = bic,
-                    IBAN = iban,
-                    Url = url,
-                    HBCIVersion = hbciVersion,
-                    UserId = userId,
-                    Pin = pin
-                };
-            }
+            this.output = output;
         }
 
-        public static void Test_Balance()
+        [Fact]
+        public void Test_Balance()
         {
-            var connectionDetails = _conn ?? new ConnectionDetails()
+            var connectionDetails = new ConnectionDetails()
             {
                 Account = "xxx",
                 Blz = 76061482,
@@ -111,7 +76,6 @@ namespace libfintx
             /* Sync */
 
             libfintx.Main.Assembly("libfintx", "0.1");
-
             libfintx.Main.Tracing(true);
 
             #endregion
@@ -120,7 +84,7 @@ namespace libfintx
 
             /* Balance */
 
-            var balance = libfintx.Main.Balance(connectionDetails, new TANDialog(WaitForTAN), false);
+            var balance = HBCI.Balance(connectionDetails, new TANDialog(WaitForTAN), false);
 
             Console.WriteLine("[ Balance ]");
             Console.WriteLine();
@@ -132,16 +96,14 @@ namespace libfintx
             Console.ReadLine();
         }
 
-
-        public static void Test_Accounts()
+        [Fact]
+        public void Test_Accounts()
         {
-            var connectionDetails = _conn ?? new ConnectionDetails()
+            var connectionDetails = new ConnectionDetails()
             {
                 // ...
             };
             Anonymous = false;
-
-            #region Sync
 
             /* Sync */
 
@@ -152,15 +114,14 @@ namespace libfintx
             var accounts = libfintx.Main.Accounts(connectionDetails, new TANDialog(WaitForTAN), Anonymous);
             foreach (var acc in accounts.Data)
             {
-                Console.WriteLine(acc.ToString());
+                output.WriteLine(acc.ToString());
             }
-
-            #endregion
         }
 
-        public static void Test_Request_TANMediumName()
+        [Fact]
+        public void Test_Request_TANMediumName()
         {
-            var connectionDetails = _conn ?? new ConnectionDetails()
+            var connectionDetails = new ConnectionDetails()
             {
                 Blz = 76050101,
                 Url = "https://banking-by1.s-fints-pt-by.de/fints30",
@@ -172,9 +133,7 @@ namespace libfintx
             #region Sync
 
             /* Sync */
-
             libfintx.Main.Assembly("libfintx", "0.1");
-
             libfintx.Main.Tracing(true);
 
             #endregion
@@ -195,16 +154,18 @@ namespace libfintx
             Console.ReadLine();
         }
 
-        public static void Test_PhotoTAN()
+        [Fact]
+        public void Test_PhotoTAN()
         {
             var PhotoCode = File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}\\..\\..\\assets\\matrixcode.txt");
 
             var mCode = new MatrixCode(PhotoCode);
 
-            mCode.CodeImage.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "matrixcode.png"));
+            mCode.CodeImage.SaveAsPng(File.OpenWrite(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "matrixcode.png")));
         }
 
-        public static void Test_PushTAN()
+        [Fact]
+        public void Test_PushTAN()
         {
             string receiver = string.Empty;
             string receiverIBAN = string.Empty;
@@ -214,7 +175,7 @@ namespace libfintx
 
             bool anonymous = false;
 
-            ConnectionDetails connectionDetails = _conn ?? new ConnectionDetails()
+            ConnectionDetails connectionDetails = new ConnectionDetails()
             {
                 AccountHolder = "Torsten Klinger",
                 Blz = 76050101,
@@ -233,7 +194,6 @@ namespace libfintx
             usage = "TEST";
 
             HBCI.Assembly("libfintx", "1");
-
             HBCI.Tracing(true);
 
             if (HBCI.Synchronization(connectionDetails).IsSuccess)
@@ -247,7 +207,7 @@ namespace libfintx
 
                 Console.WriteLine(HBCI.Transfer(connectionDetails, new TANDialog(WaitForTAN), receiver, receiverIBAN, receiverBIC, amount, usage, Segment.HIRMS, anonymous));
 
-                Console.WriteLine(Segment.HITANS);
+                output.WriteLine(Segment.HITANS);
             }
 
             var timer = new System.Threading.Timer(
@@ -255,12 +215,9 @@ namespace libfintx
                 null,
                 TimeSpan.Zero,
                 TimeSpan.FromSeconds(10));
-
-            Console.ReadLine();
         }
-#endif
 
-#if (DEBUG && WINDOWS)
+#if (WINDOWS)
         static bool anonymous = false;
 
         static string receiver = string.Empty;
@@ -272,9 +229,10 @@ namespace libfintx
 
         public static PictureBox pictureBox { get; set; }
 
-        public static void Test_Flicker()
+        [Fact]
+        public void Test_Flicker()
         {
-            connectionDetails = _conn ?? new ConnectionDetails()
+            connectionDetails = new ConnectionDetails()
             {
                 AccountHolder = "Torsten Klinger",
                 Blz = 76061482,
@@ -301,7 +259,7 @@ namespace libfintx
                 Segment.HIRMS = "972"; // -> chip-TAN               
 
                 Image flickerImage = null;
-                Console.WriteLine(EncodingHelper.ConvertToUTF8(HBCI.Transfer(connectionDetails, receiver, receiverIBAN, receiverBIC, amount, usage, Segment.HIRMS, anonymous, out flickerImage, 220, 160)));
+                output.WriteLine(EncodingHelper.ConvertToUTF8(HBCI.Transfer(connectionDetails, receiver, receiverIBAN, receiverBIC, amount, usage, Segment.HIRMS, anonymous, out flickerImage, 220, 160)));
 
                 Form frm = new Form();
                 frm.Size = new Size(flickerImage.Width + 5, flickerImage.Height + 5);
@@ -317,13 +275,11 @@ namespace libfintx
                 null,
                 TimeSpan.Zero,
                 TimeSpan.FromSeconds(10));
-
-            Console.ReadLine();
         }
 
-        static void Output()
+        void Output()
         {
-            Console.WriteLine(HBCI.Transaction_Output());
+            output.WriteLine(HBCI.Transaction_Output());
         }
 #endif
         public static string WaitForTAN(TANDialog tanDialog)

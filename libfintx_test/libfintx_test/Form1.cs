@@ -13,6 +13,10 @@ using System.Windows.Forms;
 
 using libfintx;
 using libfintx.Data;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace libfintx_test
 {
@@ -583,7 +587,12 @@ namespace libfintx_test
         {
             HBCIOutput(tanDialog.DialogResult.Messages);
 
-            txt_tan.BackColor = Color.LightYellow;
+            if (tanDialog.MatrixImage != null)
+            {
+                pBox_tan.Image = tanDialog.MatrixImage.ToBitmap();
+            }
+
+            txt_tan.BackColor = System.Drawing.Color.LightYellow;
             txt_tan.Focus();
 
             while (!_tanReady && !_closing)
@@ -592,7 +601,7 @@ namespace libfintx_test
             }
             var tan = txt_tan.Text;
 
-            txt_tan.BackColor = Color.White;
+            txt_tan.BackColor = System.Drawing.Color.White;
             txt_tan.Text = string.Empty;
 
             _tanReady = false;
@@ -631,7 +640,7 @@ namespace libfintx_test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _tanDialog = new TANDialog(WaitForTAN);
+            _tanDialog = new TANDialog(WaitForTAN, pBox_tan);
             _bankList = Bank.GetBankList();
 
             if (chk_tracing.Checked)
@@ -661,6 +670,21 @@ namespace libfintx_test
 
             if (File.Exists(productIdFile))
                 libfintx.Program.ProductId = File.ReadAllText(productIdFile);
+        }
+    }
+
+    public static class ImageSharpExtensions
+    {
+        public static System.Drawing.Bitmap ToBitmap<TPixel>(this Image<TPixel> image) where TPixel : struct, IPixel<TPixel>
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                image.SaveAsBmp(memoryStream);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                return new System.Drawing.Bitmap(memoryStream);
+            }
         }
     }
 }

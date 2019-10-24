@@ -32,6 +32,8 @@ namespace libfintx_test
                 exception = exception.InnerException;
             }
 
+            Console.WriteLine($"{t.Exception}: {t.Exception.Message}{Environment.NewLine}{t.Exception.StackTrace}");
+
             MessageBox.Show($"Unbehandelter Fehler: {string.Join(" -> ", errorMessages)}{Environment.NewLine}{t.Exception.StackTrace}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
