@@ -53,13 +53,32 @@ namespace libfintx
         /// todoComment
         public string description;
 
-        /// todoComment
+        /// <summary>
+        /// BIC of the counterpart
+        /// </summary>
         public string bankCode;
 
-        /// todoComment
+        /// <summary>
+        /// IBAN of the counterpart
+        /// </summary>
         public string accountCode;
 
-        /// todoComment
+        /// <summary>
+        /// Name of the counterpart
+        /// </summary>
         public string partnerName;
+
+        public string endToEndId;
+
+        public string mndtId;
+        
+        /// <summary>
+        /// Unique Identifier
+        /// </summary>
+        public string id;
+
+        public string pmtInfId;
+
+        public string msgId;
     }
 }
