@@ -298,7 +298,9 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                var transactions = Main.Transactions(connectionDetails, _tanDialog, false);
+                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+
+                var transactions = Main.Transactions(connectionDetails, _tanDialog, false, startDate);
 
                 HBCIOutput(transactions.Messages);
 
@@ -342,7 +344,9 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt052);
+                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+
+                var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt052, startDate);
 
                 HBCIOutput(transactions.Messages);
 
@@ -386,7 +390,9 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt053);
+                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+
+                var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt053, startDate);
 
                 HBCIOutput(transactions.Messages);
 
@@ -670,6 +676,18 @@ namespace libfintx_test
 
             if (File.Exists(productIdFile))
                 libfintx.Program.ProductId = File.ReadAllText(productIdFile);
+
+            chk_umsatzabruf.Checked = true;
+            date_umsatzabruf.Value = DateTime.Now.AddDays(-90);
+        }
+
+        private void chk_umsatzabruf_CheckedChanged(object sender, EventArgs e)
+        {
+            var checkBox = sender as CheckBox;
+            if (checkBox != null)
+            {
+                date_umsatzabruf.Enabled = checkBox.Checked;
+            }
         }
     }
 
