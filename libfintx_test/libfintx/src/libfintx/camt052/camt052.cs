@@ -65,13 +65,12 @@ namespace libfintx
                 {
                     TStatement stmt = new TStatement();
 
-                    stmt.id = accReport.ElctrncSeqNb.ToString();
+                    stmt.id = accReport.Id;
+                    stmt.elctrncSeqNb = accReport.ElctrncSeqNb.ToString();
+
                     stmt.accountCode = accReport.Acct?.Id?.Item?.ToString();
                     stmt.bankCode = accReport.Acct?.Svcr?.FinInstnId?.BIC;
                     stmt.currency = accReport.Acct?.Ccy;
-
-                    //int DiffElctrncSeqNb = Convert.ToInt32(stmt.bankCode) / Convert.ToInt32(stmt.accountCode);
-                    //stmt.id = (accReport.ElctrncSeqNb + DiffElctrncSeqNb).ToString();
 
                     stmt.severalYears = false;
                     string nm = accReport.Acct?.Ownr?.Nm;
