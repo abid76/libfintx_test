@@ -224,7 +224,7 @@ namespace libfintx
                             tr.description = string.Join(string.Empty, txDetails.RmtInf.Ustrd.Select(s => s?.Trim()));
                         }
 
-                        tr.text = entry.AddtlNtryInf;
+                        tr.text = entry.AddtlNtryInf?.Trim();
 
                         tr.bankCode = debit ?
                             txDetails?.RltdAgts?.CdtrAgt?.FinInstnId?.BIC :
@@ -260,6 +260,8 @@ namespace libfintx
                         tr.pmtInfId = txDetails?.Refs?.PmtInfId;
                         tr.mndtId = txDetails?.Refs?.MndtId;
                         tr.id = txDetails?.Refs?.Prtry?.Ref;
+
+                        tr.customerRef = entry.AcctSvcrRef;
 
                         if (txDetails?.BkTxCd.Prtry.Cd != null)
                         {
