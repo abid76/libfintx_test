@@ -639,7 +639,7 @@ namespace libfintx_test
         {
             _closing = true;
 
-            string account = $"{txt_kontonummer.Text};{txt_bankleitzahl.Text};{txt_bankleitzahl_zentrale.Text};{txt_bic.Text};{txt_iban.Text};{txt_url.Text};{txt_hbci_version.Text};{txt_userid.Text};{txt_tanverfahren.Text}";
+            string account = $"{txt_kontonummer.Text};{txt_bankleitzahl.Text};{txt_bankleitzahl_zentrale.Text};{txt_bic.Text};{txt_iban.Text};{txt_url.Text};{txt_hbci_version.Text};{txt_userid.Text};{txt_tanverfahren.Text};{txt_tan_medium.Text}";
 
             File.WriteAllText(_accountFile, account);
         }
@@ -656,7 +656,7 @@ namespace libfintx_test
             {
                 var content = File.ReadAllText(_accountFile);
                 var fields = content.Split(';');
-                if (fields.Length == 9)
+                if (fields.Length == 10)
                 {
                     txt_kontonummer.Text = fields[0];
                     txt_bankleitzahl.Text = fields[1];
@@ -667,6 +667,7 @@ namespace libfintx_test
                     txt_hbci_version.Text = fields[6];
                     txt_userid.Text = fields[7];
                     txt_tanverfahren.Text = fields[8];
+                    txt_tan_medium.Text = fields[9];
                     txt_pin.Focus();
                 }
             }
