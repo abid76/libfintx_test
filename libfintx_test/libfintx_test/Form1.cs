@@ -298,9 +298,10 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+                DateTime? startDate = chk_umsatzabruf_von.Checked ? date_umsatzabruf_von.Value : (DateTime?)null;
+                DateTime? endDate = chk_umsatzabruf_bis.Checked ? date_umsatzabruf_bis.Value : (DateTime?)null;
 
-                var transactions = Main.Transactions(connectionDetails, _tanDialog, false, startDate);
+                var transactions = Main.Transactions(connectionDetails, _tanDialog, false, startDate, endDate);
 
                 HBCIOutput(transactions.Messages);
 
@@ -344,7 +345,7 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+                DateTime? startDate = chk_umsatzabruf_von.Checked ? date_umsatzabruf_von.Value : (DateTime?)null;
 
                 var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt052, startDate);
 
@@ -390,7 +391,7 @@ namespace libfintx_test
                 if (!InitTANMedium(connectionDetails))
                     return;
 
-                DateTime? startDate = chk_umsatzabruf.Checked ? date_umsatzabruf.Value : (DateTime?)null;
+                DateTime? startDate = chk_umsatzabruf_von.Checked ? date_umsatzabruf_von.Value : (DateTime?)null;
 
                 var transactions = Main.Transactions_camt(connectionDetails, _tanDialog, false, camtVersion.camt053, startDate);
 
@@ -678,17 +679,8 @@ namespace libfintx_test
             if (File.Exists(productIdFile))
                 libfintx.Program.ProductId = File.ReadAllText(productIdFile);
 
-            chk_umsatzabruf.Checked = true;
-            date_umsatzabruf.Value = DateTime.Now.AddDays(-90);
-        }
-
-        private void chk_umsatzabruf_CheckedChanged(object sender, EventArgs e)
-        {
-            var checkBox = sender as CheckBox;
-            if (checkBox != null)
-            {
-                date_umsatzabruf.Enabled = checkBox.Checked;
-            }
+            chk_umsatzabruf_von.Checked = true;
+            date_umsatzabruf_von.Value = DateTime.Now.AddDays(-90);
         }
     }
 

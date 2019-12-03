@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.txt_hbci_meldung = new System.Windows.Forms.TextBox();
-            this.Panel3 = new System.Windows.Forms.Panel();
             this.btn_auftrag_bestätigen_tan = new System.Windows.Forms.Button();
             this.btn_überweisen = new System.Windows.Forms.Button();
             this.camt_053_abholen = new System.Windows.Forms.Button();
@@ -50,7 +49,6 @@
             this.lbl_empfängeriban = new System.Windows.Forms.Label();
             this.txt_empfängername = new System.Windows.Forms.TextBox();
             this.lbl_empfängername = new System.Windows.Forms.Label();
-            this.Panel2 = new System.Windows.Forms.Panel();
             this.txt_pin = new System.Windows.Forms.TextBox();
             this.lbl_pin = new System.Windows.Forms.Label();
             this.txt_userid = new System.Windows.Forms.TextBox();
@@ -80,10 +78,12 @@
             this.txt_bankleitzahl_zentrale = new System.Windows.Forms.TextBox();
             this.txt_tan_medium = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.Panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.date_umsatzabruf = new System.Windows.Forms.DateTimePicker();
-            this.chk_umsatzabruf = new System.Windows.Forms.CheckBox();
+            this.date_umsatzabruf_von = new System.Windows.Forms.DateTimePicker();
+            this.chk_umsatzabruf_von = new System.Windows.Forms.CheckBox();
+            this.chk_umsatzabruf_bis = new System.Windows.Forms.CheckBox();
+            this.date_umsatzabruf_bis = new System.Windows.Forms.DateTimePicker();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pBox_tan)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,26 +94,16 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_hbci_meldung.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.txt_hbci_meldung.ForeColor = System.Drawing.SystemColors.Window;
-            this.txt_hbci_meldung.Location = new System.Drawing.Point(0, 308);
+            this.txt_hbci_meldung.Location = new System.Drawing.Point(0, 318);
             this.txt_hbci_meldung.Multiline = true;
             this.txt_hbci_meldung.Name = "txt_hbci_meldung";
             this.txt_hbci_meldung.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txt_hbci_meldung.Size = new System.Drawing.Size(2080, 296);
+            this.txt_hbci_meldung.Size = new System.Drawing.Size(1551, 286);
             this.txt_hbci_meldung.TabIndex = 88;
-            // 
-            // Panel3
-            // 
-            this.Panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel3.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.Panel3.Location = new System.Drawing.Point(1, 300);
-            this.Panel3.Name = "Panel3";
-            this.Panel3.Size = new System.Drawing.Size(2079, 2);
-            this.Panel3.TabIndex = 87;
             // 
             // btn_auftrag_bestätigen_tan
             // 
-            this.btn_auftrag_bestätigen_tan.Location = new System.Drawing.Point(694, 253);
+            this.btn_auftrag_bestätigen_tan.Location = new System.Drawing.Point(694, 273);
             this.btn_auftrag_bestätigen_tan.Name = "btn_auftrag_bestätigen_tan";
             this.btn_auftrag_bestätigen_tan.Size = new System.Drawing.Size(118, 39);
             this.btn_auftrag_bestätigen_tan.TabIndex = 81;
@@ -123,7 +113,7 @@
             // 
             // btn_überweisen
             // 
-            this.btn_überweisen.Location = new System.Drawing.Point(608, 253);
+            this.btn_überweisen.Location = new System.Drawing.Point(608, 273);
             this.btn_überweisen.Name = "btn_überweisen";
             this.btn_überweisen.Size = new System.Drawing.Size(80, 39);
             this.btn_überweisen.TabIndex = 80;
@@ -133,7 +123,7 @@
             // 
             // camt_053_abholen
             // 
-            this.camt_053_abholen.Location = new System.Drawing.Point(488, 253);
+            this.camt_053_abholen.Location = new System.Drawing.Point(488, 273);
             this.camt_053_abholen.Name = "camt_053_abholen";
             this.camt_053_abholen.Size = new System.Drawing.Size(114, 39);
             this.camt_053_abholen.TabIndex = 79;
@@ -143,7 +133,7 @@
             // 
             // camt_052_abholen
             // 
-            this.camt_052_abholen.Location = new System.Drawing.Point(364, 253);
+            this.camt_052_abholen.Location = new System.Drawing.Point(364, 273);
             this.camt_052_abholen.Name = "camt_052_abholen";
             this.camt_052_abholen.Size = new System.Drawing.Size(118, 39);
             this.camt_052_abholen.TabIndex = 78;
@@ -153,7 +143,7 @@
             // 
             // btn_umsätze_abholen
             // 
-            this.btn_umsätze_abholen.Location = new System.Drawing.Point(259, 253);
+            this.btn_umsätze_abholen.Location = new System.Drawing.Point(259, 273);
             this.btn_umsätze_abholen.Name = "btn_umsätze_abholen";
             this.btn_umsätze_abholen.Size = new System.Drawing.Size(99, 39);
             this.btn_umsätze_abholen.TabIndex = 77;
@@ -163,7 +153,7 @@
             // 
             // btn_kontostand_abfragen
             // 
-            this.btn_kontostand_abfragen.Location = new System.Drawing.Point(133, 253);
+            this.btn_kontostand_abfragen.Location = new System.Drawing.Point(133, 273);
             this.btn_kontostand_abfragen.Name = "btn_kontostand_abfragen";
             this.btn_kontostand_abfragen.Size = new System.Drawing.Size(120, 39);
             this.btn_kontostand_abfragen.TabIndex = 76;
@@ -173,7 +163,7 @@
             // 
             // btn_synchronisation
             // 
-            this.btn_synchronisation.Location = new System.Drawing.Point(15, 253);
+            this.btn_synchronisation.Location = new System.Drawing.Point(15, 273);
             this.btn_synchronisation.Name = "btn_synchronisation";
             this.btn_synchronisation.Size = new System.Drawing.Size(112, 39);
             this.btn_synchronisation.TabIndex = 75;
@@ -287,14 +277,6 @@
             this.lbl_empfängername.Size = new System.Drawing.Size(92, 13);
             this.lbl_empfängername.TabIndex = 61;
             this.lbl_empfängername.Text = "Empfänger-Name:";
-            // 
-            // Panel2
-            // 
-            this.Panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.Panel2.Location = new System.Drawing.Point(450, 0);
-            this.Panel2.Name = "Panel2";
-            this.Panel2.Size = new System.Drawing.Size(2, 244);
-            this.Panel2.TabIndex = 60;
             // 
             // txt_pin
             // 
@@ -428,7 +410,7 @@
             // 
             // btn_zugelassene_tanverfahren
             // 
-            this.btn_zugelassene_tanverfahren.Location = new System.Drawing.Point(819, 253);
+            this.btn_zugelassene_tanverfahren.Location = new System.Drawing.Point(819, 273);
             this.btn_zugelassene_tanverfahren.Name = "btn_zugelassene_tanverfahren";
             this.btn_zugelassene_tanverfahren.Size = new System.Drawing.Size(151, 39);
             this.btn_zugelassene_tanverfahren.TabIndex = 82;
@@ -438,7 +420,7 @@
             // 
             // btn_bankdaten_laden
             // 
-            this.btn_bankdaten_laden.Location = new System.Drawing.Point(976, 253);
+            this.btn_bankdaten_laden.Location = new System.Drawing.Point(976, 273);
             this.btn_bankdaten_laden.Name = "btn_bankdaten_laden";
             this.btn_bankdaten_laden.Size = new System.Drawing.Size(102, 39);
             this.btn_bankdaten_laden.TabIndex = 83;
@@ -448,7 +430,7 @@
             // 
             // btn_überweisungsdaten_laden
             // 
-            this.btn_überweisungsdaten_laden.Location = new System.Drawing.Point(1084, 253);
+            this.btn_überweisungsdaten_laden.Location = new System.Drawing.Point(1084, 273);
             this.btn_überweisungsdaten_laden.Name = "btn_überweisungsdaten_laden";
             this.btn_überweisungsdaten_laden.Size = new System.Drawing.Size(143, 39);
             this.btn_überweisungsdaten_laden.TabIndex = 84;
@@ -474,7 +456,7 @@
             // 
             // btn_konten_anzeigen
             // 
-            this.btn_konten_anzeigen.Location = new System.Drawing.Point(1233, 253);
+            this.btn_konten_anzeigen.Location = new System.Drawing.Point(1233, 273);
             this.btn_konten_anzeigen.Name = "btn_konten_anzeigen";
             this.btn_konten_anzeigen.Size = new System.Drawing.Size(106, 39);
             this.btn_konten_anzeigen.TabIndex = 85;
@@ -484,7 +466,7 @@
             // 
             // btn_tan_medium_name_abfragen
             // 
-            this.btn_tan_medium_name_abfragen.Location = new System.Drawing.Point(1346, 253);
+            this.btn_tan_medium_name_abfragen.Location = new System.Drawing.Point(1346, 273);
             this.btn_tan_medium_name_abfragen.Name = "btn_tan_medium_name_abfragen";
             this.btn_tan_medium_name_abfragen.Size = new System.Drawing.Size(156, 39);
             this.btn_tan_medium_name_abfragen.TabIndex = 86;
@@ -549,16 +531,6 @@
             this.label1.TabIndex = 92;
             this.label1.Text = "TAN-Medium:";
             // 
-            // Panel1
-            // 
-            this.Panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.Panel1.Location = new System.Drawing.Point(1, 242);
-            this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(2079, 2);
-            this.Panel1.TabIndex = 59;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -568,30 +540,57 @@
             this.label2.TabIndex = 94;
             this.label2.Text = "Umsatzabruf ab:";
             // 
-            // date_umsatzabruf
+            // date_umsatzabruf_von
             // 
-            this.date_umsatzabruf.Location = new System.Drawing.Point(132, 215);
-            this.date_umsatzabruf.Name = "date_umsatzabruf";
-            this.date_umsatzabruf.Size = new System.Drawing.Size(311, 20);
-            this.date_umsatzabruf.TabIndex = 95;
+            this.date_umsatzabruf_von.Location = new System.Drawing.Point(132, 215);
+            this.date_umsatzabruf_von.Name = "date_umsatzabruf_von";
+            this.date_umsatzabruf_von.Size = new System.Drawing.Size(311, 20);
+            this.date_umsatzabruf_von.TabIndex = 95;
             // 
-            // chk_umsatzabruf
+            // chk_umsatzabruf_von
             // 
-            this.chk_umsatzabruf.AutoSize = true;
-            this.chk_umsatzabruf.Location = new System.Drawing.Point(111, 218);
-            this.chk_umsatzabruf.Name = "chk_umsatzabruf";
-            this.chk_umsatzabruf.Size = new System.Drawing.Size(15, 14);
-            this.chk_umsatzabruf.TabIndex = 96;
-            this.chk_umsatzabruf.UseVisualStyleBackColor = true;
-            this.chk_umsatzabruf.CheckedChanged += new System.EventHandler(this.chk_umsatzabruf_CheckedChanged);
+            this.chk_umsatzabruf_von.AutoSize = true;
+            this.chk_umsatzabruf_von.Location = new System.Drawing.Point(111, 218);
+            this.chk_umsatzabruf_von.Name = "chk_umsatzabruf_von";
+            this.chk_umsatzabruf_von.Size = new System.Drawing.Size(15, 14);
+            this.chk_umsatzabruf_von.TabIndex = 96;
+            this.chk_umsatzabruf_von.UseVisualStyleBackColor = true;
+            // 
+            // chk_umsatzabruf_bis
+            // 
+            this.chk_umsatzabruf_bis.AutoSize = true;
+            this.chk_umsatzabruf_bis.Location = new System.Drawing.Point(111, 245);
+            this.chk_umsatzabruf_bis.Name = "chk_umsatzabruf_bis";
+            this.chk_umsatzabruf_bis.Size = new System.Drawing.Size(15, 14);
+            this.chk_umsatzabruf_bis.TabIndex = 99;
+            this.chk_umsatzabruf_bis.UseVisualStyleBackColor = true;
+            // 
+            // date_umsatzabruf_bis
+            // 
+            this.date_umsatzabruf_bis.Location = new System.Drawing.Point(132, 242);
+            this.date_umsatzabruf_bis.Name = "date_umsatzabruf_bis";
+            this.date_umsatzabruf_bis.Size = new System.Drawing.Size(311, 20);
+            this.date_umsatzabruf_bis.TabIndex = 98;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 245);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 13);
+            this.label3.TabIndex = 97;
+            this.label3.Text = "Umsatzabruf bis:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1550, 604);
-            this.Controls.Add(this.chk_umsatzabruf);
-            this.Controls.Add(this.date_umsatzabruf);
+            this.Controls.Add(this.chk_umsatzabruf_bis);
+            this.Controls.Add(this.date_umsatzabruf_bis);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.chk_umsatzabruf_von);
+            this.Controls.Add(this.date_umsatzabruf_von);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txt_tan_medium);
             this.Controls.Add(this.label1);
@@ -607,7 +606,6 @@
             this.Controls.Add(this.btn_bankdaten_laden);
             this.Controls.Add(this.btn_zugelassene_tanverfahren);
             this.Controls.Add(this.txt_hbci_meldung);
-            this.Controls.Add(this.Panel3);
             this.Controls.Add(this.btn_auftrag_bestätigen_tan);
             this.Controls.Add(this.btn_überweisen);
             this.Controls.Add(this.camt_053_abholen);
@@ -628,8 +626,6 @@
             this.Controls.Add(this.lbl_empfängeriban);
             this.Controls.Add(this.txt_empfängername);
             this.Controls.Add(this.lbl_empfängername);
-            this.Controls.Add(this.Panel2);
-            this.Controls.Add(this.Panel1);
             this.Controls.Add(this.txt_pin);
             this.Controls.Add(this.lbl_pin);
             this.Controls.Add(this.txt_userid);
@@ -660,7 +656,6 @@
         #endregion
 
         internal System.Windows.Forms.TextBox txt_hbci_meldung;
-        internal System.Windows.Forms.Panel Panel3;
         internal System.Windows.Forms.Button btn_auftrag_bestätigen_tan;
         internal System.Windows.Forms.Button btn_überweisen;
         internal System.Windows.Forms.Button camt_053_abholen;
@@ -681,7 +676,6 @@
         internal System.Windows.Forms.Label lbl_empfängeriban;
         internal System.Windows.Forms.TextBox txt_empfängername;
         internal System.Windows.Forms.Label lbl_empfängername;
-        internal System.Windows.Forms.Panel Panel2;
         internal System.Windows.Forms.TextBox txt_pin;
         internal System.Windows.Forms.Label lbl_pin;
         internal System.Windows.Forms.TextBox txt_userid;
@@ -711,10 +705,12 @@
         internal System.Windows.Forms.TextBox txt_bankleitzahl_zentrale;
         internal System.Windows.Forms.TextBox txt_tan_medium;
         internal System.Windows.Forms.Label label1;
-        internal System.Windows.Forms.Panel Panel1;
         internal System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DateTimePicker date_umsatzabruf;
-        private System.Windows.Forms.CheckBox chk_umsatzabruf;
+        private System.Windows.Forms.DateTimePicker date_umsatzabruf_von;
+        private System.Windows.Forms.CheckBox chk_umsatzabruf_von;
+        private System.Windows.Forms.CheckBox chk_umsatzabruf_bis;
+        private System.Windows.Forms.DateTimePicker date_umsatzabruf_bis;
+        internal System.Windows.Forms.Label label3;
     }
 }
 
