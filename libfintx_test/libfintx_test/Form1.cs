@@ -311,9 +311,12 @@ namespace libfintx_test
                     {
                         foreach (var i in item.SWIFTTransactions)
                         {
-                            SimpleOutput("Datum: " + i.inputDate + " | " +
+                            SimpleOutput(
+                                "Datum: " + i.inputDate + " | " +
+                                "Buchungsschlüssel: " + i.transactionTypeId + " | " +
+                                "GV-Code: " + i.typecode + " | " +
                                 "Empfänger / Auftraggeber: " + i.partnerName + " | " +
-                                "Verwendungszweck: " + i.text + " | "
+                                "Verwendungszweck: " + i.description + " | "
                                 + "Betrag: " + i.amount);
                         }
                     }
@@ -357,7 +360,10 @@ namespace libfintx_test
                     {
                         foreach (var i in item.transactions)
                         {
-                            SimpleOutput("Datum: " + i.inputDate + " | " +
+                            SimpleOutput(
+                                "Datum: " + i.inputDate + " | " +
+                                "Buchungsschlüssel: " + i.transactionTypeId + " | " +
+                                "GV-Code: " + i.typecode + " | " +
                                 "Empfänger / Auftraggeber: " + i.partnerName + " | " +
                                 "Verwendungszweck: " + i.description + " | "
                                 + "Betrag: " + String.Format("{0:0.00}", i.amount));
