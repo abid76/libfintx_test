@@ -520,7 +520,7 @@
             this.txt_tan_medium.Location = new System.Drawing.Point(591, 162);
             this.txt_tan_medium.Name = "txt_tan_medium";
             this.txt_tan_medium.Size = new System.Drawing.Size(297, 20);
-            this.txt_tan_medium.TabIndex = 93;
+            this.txt_tan_medium.TabIndex = 73;
             // 
             // label1
             // 
