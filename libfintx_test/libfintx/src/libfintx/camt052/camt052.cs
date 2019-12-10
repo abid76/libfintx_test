@@ -180,7 +180,7 @@ namespace libfintx
                         }
 
                         TTransaction tr = new TTransaction();
-                        
+
                         tr.pending = entry.Sts == EntryStatus2Code.PDNG;
 
                         if (entry.BookgDt != null)
@@ -247,11 +247,11 @@ namespace libfintx
 
                         tr.endToEndId = txDetails?.Refs?.EndToEndId;
 
-                        tr.msgId = txDetails?.Refs?.MsgId;
-                        tr.pmtInfId = txDetails?.Refs?.PmtInfId;
-                        tr.mndtId = txDetails?.Refs?.MndtId;
-                        tr.id = txDetails?.Refs?.Prtry?.Ref;
-                        
+                        tr.messageId = txDetails?.Refs?.MsgId;
+                        tr.paymentInformationId = txDetails?.Refs?.PmtInfId;
+                        tr.mandateId = txDetails?.Refs?.MndtId;
+                        tr.proprietaryRef = txDetails?.Refs?.Prtry?.Ref;
+
                         tr.customerRef = entry.AcctSvcrRef;
 
                         if (txDetails?.BkTxCd.Prtry.Cd != null)
