@@ -419,6 +419,48 @@ namespace libfintx_test
             }
         }
 
+        private void btn_daueraufträge_abholen_Click(object sender, EventArgs e)
+        {
+            Segment.Reset();
+
+            ConnectionDetails connectionDetails = GetConnectionDetails();
+
+            var sync = Main.Synchronization(connectionDetails);
+            connectionDetails.CustomerSystemId = Segment.HISYN;
+
+            HBCIOutput(sync.Messages);
+
+            if (sync.IsSuccess)
+            {
+                // TAN-Verfahren
+                Segment.HIRMS = txt_tanverfahren.Text;
+
+                if (!InitTANMedium(connectionDetails))
+                    return;
+
+                var bankersOrders = Main.GetBankersOrders(connectionDetails, _tanDialog, false);
+
+                HBCIOutput(bankersOrders.Messages);
+
+                if (bankersOrders.IsSuccess)
+                {
+                    foreach (var item in bankersOrders.Data)
+                    {
+                        pain00100103_ct_data.PaymentInfo paymentData = item.SepaData.Payments.FirstOrDefault();
+                        var txInfo = paymentData.CreditTxInfos.FirstOrDefault();
+
+                        SimpleOutput("Auftrags-Id: " + item.OrderId + " | " +
+                            "Empfänger: " + txInfo.Creditor + " | " +
+                            "Betrag: " + txInfo.Amount + " | " +
+                            "Verwendungszweck: " + txInfo.RemittanceInformation + " | " +
+                            "Erste Ausführung: " + $"{item.FirstExecutionDate:d}" + " | " +
+                            "Nächste Ausführung: " + $"{paymentData.RequestedExecutionDate:d}" + " | " +
+                            "Letzte Ausführung: " + $"{item.LastExecutionDate:d}");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Überweisen
         /// </summary>

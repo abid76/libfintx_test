@@ -84,6 +84,7 @@
             this.chk_umsatzabruf_bis = new System.Windows.Forms.CheckBox();
             this.date_umsatzabruf_bis = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
+            this.btn_daueraufträge_abholen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pBox_tan)).BeginInit();
             this.SuspendLayout();
             // 
@@ -98,12 +99,12 @@
             this.txt_hbci_meldung.Multiline = true;
             this.txt_hbci_meldung.Name = "txt_hbci_meldung";
             this.txt_hbci_meldung.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txt_hbci_meldung.Size = new System.Drawing.Size(1551, 286);
+            this.txt_hbci_meldung.Size = new System.Drawing.Size(1651, 286);
             this.txt_hbci_meldung.TabIndex = 88;
             // 
             // btn_auftrag_bestätigen_tan
             // 
-            this.btn_auftrag_bestätigen_tan.Location = new System.Drawing.Point(694, 273);
+            this.btn_auftrag_bestätigen_tan.Location = new System.Drawing.Point(826, 273);
             this.btn_auftrag_bestätigen_tan.Name = "btn_auftrag_bestätigen_tan";
             this.btn_auftrag_bestätigen_tan.Size = new System.Drawing.Size(118, 39);
             this.btn_auftrag_bestätigen_tan.TabIndex = 81;
@@ -113,7 +114,7 @@
             // 
             // btn_überweisen
             // 
-            this.btn_überweisen.Location = new System.Drawing.Point(608, 273);
+            this.btn_überweisen.Location = new System.Drawing.Point(740, 273);
             this.btn_überweisen.Name = "btn_überweisen";
             this.btn_überweisen.Size = new System.Drawing.Size(80, 39);
             this.btn_überweisen.TabIndex = 80;
@@ -410,7 +411,7 @@
             // 
             // btn_zugelassene_tanverfahren
             // 
-            this.btn_zugelassene_tanverfahren.Location = new System.Drawing.Point(819, 273);
+            this.btn_zugelassene_tanverfahren.Location = new System.Drawing.Point(951, 273);
             this.btn_zugelassene_tanverfahren.Name = "btn_zugelassene_tanverfahren";
             this.btn_zugelassene_tanverfahren.Size = new System.Drawing.Size(151, 39);
             this.btn_zugelassene_tanverfahren.TabIndex = 82;
@@ -420,7 +421,7 @@
             // 
             // btn_bankdaten_laden
             // 
-            this.btn_bankdaten_laden.Location = new System.Drawing.Point(976, 273);
+            this.btn_bankdaten_laden.Location = new System.Drawing.Point(1108, 273);
             this.btn_bankdaten_laden.Name = "btn_bankdaten_laden";
             this.btn_bankdaten_laden.Size = new System.Drawing.Size(102, 39);
             this.btn_bankdaten_laden.TabIndex = 83;
@@ -430,7 +431,7 @@
             // 
             // btn_überweisungsdaten_laden
             // 
-            this.btn_überweisungsdaten_laden.Location = new System.Drawing.Point(1084, 273);
+            this.btn_überweisungsdaten_laden.Location = new System.Drawing.Point(1216, 273);
             this.btn_überweisungsdaten_laden.Name = "btn_überweisungsdaten_laden";
             this.btn_überweisungsdaten_laden.Size = new System.Drawing.Size(143, 39);
             this.btn_überweisungsdaten_laden.TabIndex = 84;
@@ -456,7 +457,7 @@
             // 
             // btn_konten_anzeigen
             // 
-            this.btn_konten_anzeigen.Location = new System.Drawing.Point(1233, 273);
+            this.btn_konten_anzeigen.Location = new System.Drawing.Point(1365, 273);
             this.btn_konten_anzeigen.Name = "btn_konten_anzeigen";
             this.btn_konten_anzeigen.Size = new System.Drawing.Size(106, 39);
             this.btn_konten_anzeigen.TabIndex = 85;
@@ -466,7 +467,7 @@
             // 
             // btn_tan_medium_name_abfragen
             // 
-            this.btn_tan_medium_name_abfragen.Location = new System.Drawing.Point(1346, 273);
+            this.btn_tan_medium_name_abfragen.Location = new System.Drawing.Point(1478, 273);
             this.btn_tan_medium_name_abfragen.Name = "btn_tan_medium_name_abfragen";
             this.btn_tan_medium_name_abfragen.Size = new System.Drawing.Size(156, 39);
             this.btn_tan_medium_name_abfragen.TabIndex = 86;
@@ -581,11 +582,22 @@
             this.label3.TabIndex = 97;
             this.label3.Text = "Umsatzabruf bis:";
             // 
+            // btn_daueraufträge_abholen
+            // 
+            this.btn_daueraufträge_abholen.Location = new System.Drawing.Point(608, 273);
+            this.btn_daueraufträge_abholen.Name = "btn_daueraufträge_abholen";
+            this.btn_daueraufträge_abholen.Size = new System.Drawing.Size(126, 39);
+            this.btn_daueraufträge_abholen.TabIndex = 100;
+            this.btn_daueraufträge_abholen.Text = "Daueraufträge abholen";
+            this.btn_daueraufträge_abholen.UseVisualStyleBackColor = true;
+            this.btn_daueraufträge_abholen.Click += new System.EventHandler(this.btn_daueraufträge_abholen_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1550, 604);
+            this.ClientSize = new System.Drawing.Size(1650, 604);
+            this.Controls.Add(this.btn_daueraufträge_abholen);
             this.Controls.Add(this.chk_umsatzabruf_bis);
             this.Controls.Add(this.date_umsatzabruf_bis);
             this.Controls.Add(this.label3);
@@ -711,6 +723,7 @@
         private System.Windows.Forms.CheckBox chk_umsatzabruf_bis;
         private System.Windows.Forms.DateTimePicker date_umsatzabruf_bis;
         internal System.Windows.Forms.Label label3;
+        internal System.Windows.Forms.Button btn_daueraufträge_abholen;
     }
 }
 
